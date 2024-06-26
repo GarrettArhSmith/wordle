@@ -3,15 +3,15 @@ import Tile from "./Tile"
 
 type Props = {
   gameData: {
-    board: Array<String>;
-    input: Array<String>;
-    word: String;
+    board: Array<string>;
+    input: Array<string>;
+    word: string;
   }
 }
 
 const Board = ({ gameData: { word, board, input } }: Props) => {
   
-  const determineMatch = (char: string, i: Number) => {
+  const determineMatch = (char: string, i: number) => {
     const j = i-(Math.floor(i/5)*5);
     if (word[j] === char) return "index"
     if (word.includes(char)) return "char"

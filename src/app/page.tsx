@@ -10,12 +10,19 @@ const initGameData = {
   board: [],
 }
 
+type GameDataType = {
+  state: string;
+  word: string;
+  input: string[];
+  board: string[];
+}
+
 export default function Home() {
-  const [gameData, setGameData] = useState(initGameData);
-  const [isMsgShown, setIsMsgShown] = useState(false);
+  const [gameData, setGameData] = useState<GameDataType>(initGameData);
+  const [isMsgShown, setIsMsgShown] = useState<boolean>(false);
 
   useEffect(() => {
-    const handleKeyDown = (e: { code: String; key: String; repeat: Boolean }) => {
+    const handleKeyDown = (e: { code: string; key: string; repeat: boolean }) => {
       if (gameData.state !== "unf" || e.repeat) return;
       else if (e.key === "Enter") {
         setGameData(prev =>  {
@@ -46,7 +53,7 @@ export default function Home() {
       }
       else if (e.code.substring(0, 3) === "Key") {
         setGameData(prev => prev.input.length < 5 ? (
-          { ...prev, input: prev.input.toSpliced(prev.input.length, 0, e.key) }
+          { ...prev, input:  [...prev.input, e.key] }
         ) : prev)
       }
     }
