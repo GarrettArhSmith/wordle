@@ -1,5 +1,5 @@
-import { Input } from "postcss";
 import Tile from "./Tile"
+import { v4 } from "uuid";
 
 type Props = {
   gameData: {
@@ -22,21 +22,21 @@ const Board = ({ gameData: { word, board, input } }: Props) => {
     <div className='w-80 grid grid-cols-5 gap-1 uppercase'>
       {board.map((tile, i) => (
         <Tile
-          key={`tile${Math.floor(Math.random() * 10000 * i)}`}
+          key={v4()}
           dataTileType="board"
           dataMatchType={determineMatch(tile, i)}
         >{tile}</Tile>
       ))}
       {input.map((tile, i) => (
         <Tile
-          key={`tile${Math.floor(Math.random() * 10000 * i)}`}
+          key={v4()}
           dataTileType="input"
           dataMatchType="none"
         >{tile}</Tile>
       ))}
       {Array(30 - (board.length + input.length)).fill("").map((tile, i) => (
         <Tile 
-          key={`tile${Math.floor(Math.random() * 10000 * i)}`} 
+          key={v4()} 
           dataTileType="empty"
           dataMatchType="none"
         >{tile}</Tile>
