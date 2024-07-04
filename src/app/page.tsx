@@ -2,12 +2,14 @@
 import React, { useState, useEffect } from "react";
 import Board from "@/components/Board";
 import Words from '@/app/words.json'
+import Keyboard from "@/components/Keyboard";
 
 const initGameData = {
   state: "unf",
   word: Words[Math.floor(Math.random() * Words.length)],
   input: [],
   board: [],
+  keys: ['q','w','e','r','t','y','u','i','o','p','a','s','d','f','g','h','j','k','l','z','x','c','v','b','n','m'].map(char => ({ used: false, char })),
 }
 
 type GameDataType = {
@@ -15,6 +17,10 @@ type GameDataType = {
   word: string;
   input: string[];
   board: string[];
+  keys: {
+    used: boolean;
+    char: string;
+  }[];
 }
 
 export default function Home() {
@@ -66,7 +72,7 @@ export default function Home() {
   }, [gameData])
 
   return (
-    <main className="flex min-h-screen flex-col items-center p-24">
+    <main className="flex min-h-screen flex-col items-center gap-10">
       <h1 className="font-sans text-2xl font-bold antialiased">Wordle Clone</h1>
       {isMsgShown && (
         <div className="absolute bg-black text-white top-48 p-2 rounded transition">
@@ -78,6 +84,7 @@ export default function Home() {
       <Board
         gameData={gameData}
       />
+      <Keyboard keys={gameData.keys} />
     </main>
   );
 }
