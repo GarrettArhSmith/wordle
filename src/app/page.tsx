@@ -72,7 +72,7 @@ export default function Home() {
   }, [gameData])
 
   return (
-    <main className="flex min-h-screen flex-col items-center gap-10">
+    <main className="flex min-h-screen flex-col items-center gap-10 p-2 justify-between">
       <h1 className="font-sans text-2xl font-bold antialiased">Wordle Clone</h1>
       {isMsgShown && (
         <div className="absolute bg-black text-white top-48 p-2 rounded transition">
