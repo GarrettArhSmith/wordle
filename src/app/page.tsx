@@ -1,5 +1,5 @@
 'use client'
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Board from "@/components/Board";
 import Words from '@/app/words.json'
 import Keyboard from "@/components/Keyboard";
@@ -27,49 +27,49 @@ export default function Home() {
   const [gameData, setGameData] = useState<GameDataType>(initGameData);
   const [isMsgShown, setIsMsgShown] = useState<boolean>(false);
 
-  useEffect(() => {
-    const handleKeyDown = (e: { code: string; key: string; repeat: boolean }) => {
-      if (gameData.state !== "unf" || e.repeat) return;
-      else if (e.key === "Enter") {
-        setGameData(prev =>  {
-          let newState = "unf"
-          if (prev.word === prev.input.join("")) {
-            newState = "win"
-            setIsMsgShown(true);
-          }
-          if (prev.board.length >= 25) {
-            newState = "lose"
-            setIsMsgShown(true);
-          }
-          if (prev.input.length < 5) {
-            setIsMsgShown(true);
-            setTimeout(() => {
-              setIsMsgShown(false);
-            }, 1000)
-          }
-          return {
-            ...prev,
-            board: prev.input.length > 4 ? prev.board.concat(prev.input) : prev.board,
-            input: prev.input.length > 4 ? [] : prev.input,
-            state: newState
-        }})
-      }
-      else if (e.key === "Backspace") {
-        setGameData(prev => ({ ...prev, input: prev.input.toSpliced(-1, 1) }))
-      }
-      else if (e.code.substring(0, 3) === "Key") {
-        setGameData(prev => prev.input.length < 5 ? (
-          { ...prev, input:  [...prev.input, e.key] }
-        ) : prev)
-      }
+  const handleKeyDown = useCallback((e: { code: string; key: string; repeat: boolean }) => {
+    if (gameData.state !== "unf" || e.repeat) return;
+    else if (e.key === "Enter") {
+      setGameData(prev =>  {
+        let newState = "unf"
+        if (prev.word === prev.input.join("")) {
+          newState = "win"
+          setIsMsgShown(true);
+        }
+        if (prev.board.length >= 25) {
+          newState = "lose"
+          setIsMsgShown(true);
+        }
+        if (prev.input.length < 5) {
+          setIsMsgShown(true);
+          setTimeout(() => {
+            setIsMsgShown(false);
+          }, 1000)
+        }
+        return {
+          ...prev,
+          board: prev.input.length > 4 ? prev.board.concat(prev.input) : prev.board,
+          input: prev.input.length > 4 ? [] : prev.input,
+          state: newState
+      }})
     }
+    else if (e.key === "Backspace") {
+      setGameData(prev => ({ ...prev, input: prev.input.toSpliced(-1, 1) }))
+    }
+    else if (e.code.substring(0, 3) === "Key") {
+      setGameData(prev => prev.input.length < 5 ? (
+        { ...prev, input:  [...prev.input, e.key] }
+      ) : prev)
+    }
+  }, [gameData.state])
 
+  useEffect(() => {
     document.addEventListener("keydown", handleKeyDown);
 
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     }
-  }, [gameData])
+  }, [gameData, handleKeyDown])
 
   return (
     <main className="flex min-h-screen flex-col items-center gap-10 p-2 justify-between">
@@ -84,7 +84,7 @@ export default function Home() {
       <Board
         gameData={gameData}
       />
-      <Keyboard keys={gameData.keys} />
+      <Keyboard keys={gameData.keys} keyOnClick={handleKeyDown} />
     </main>
   );
 }

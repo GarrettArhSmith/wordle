@@ -10,17 +10,24 @@ type KeyType = {
 
 type Props = {
   keys: KeyType[];
+  keyOnClick: (e: {code: string, key: string, repeat: boolean}) => void;
 }
 
-const Keyboard = ({ keys }: Props) => {
+const Keyboard = ({ keys, keyOnClick }: Props) => {
+
+  const mockEvent = (key: { char: string; }) => {
+    if (key.char === 'Enter' || key.char === 'Backspace') return { code: key.char, key: key.char, repeat: false }
+    return { code: `Key${key.char.toUpperCase()}`, key: key.char, repeat: false }
+  }
+
   return (
     <div className='flex flex-wrap gap-1 md:gap-1.5 justify-center'>
       {keys.map(key => (
         <Fragment key={v4()}>
-          <Key char={key.char}></Key>
+          <Key char={key.char} onClick={() => keyOnClick(mockEvent(key))}></Key>
           {(key.char === 'p' || key.char === 'l') && <hr className='w-full -my-1.5 border-none' />}
-          {key.char === 'l' && <Key>Enter</Key>}
-          {key.char === 'm' && <Key><BackspaceIcon className='size-6' /></Key>}
+          {key.char === 'l' && <Key onClick={() => keyOnClick(mockEvent({char: 'Enter'}))}>Enter</Key>}
+          {key.char === 'm' && <Key onClick={() => keyOnClick(mockEvent({char: 'Backspace'}))}><BackspaceIcon className='size-6' /></Key>}
         </Fragment>
       ))}
     </div>
