@@ -4,7 +4,7 @@ import { BackspaceIcon } from "@heroicons/react/24/outline";
 import Key from "./Key";
 
 type KeyType = {
-  used: boolean;
+  match: string;
   char: string;
 };
 
@@ -30,7 +30,7 @@ const Keyboard = ({ keys, keyOnClick }: Props) => {
         <Fragment key={v4()}>
           <Key
             char={key.char}
-            used={key.used}
+            match={key.match}
             onClick={() => keyOnClick(mockEvent(key))}
           ></Key>
           {(key.char === "p" || key.char === "l") && (

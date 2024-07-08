@@ -3,6 +3,20 @@ import React, { useState, useEffect, useCallback } from "react";
 import Board from "@/components/Board";
 import Words from "@/app/words.json";
 import Keyboard from "@/components/Keyboard";
+import determineMatch from "@/app/helperFunctions";
+
+type MatchType = string;
+
+type GameDataType = {
+  state: string;
+  word: string;
+  input: string[];
+  board: string[];
+  keys: {
+    match: MatchType;
+    char: string;
+  }[];
+};
 
 const initGameData = {
   state: "unf",
@@ -36,18 +50,7 @@ const initGameData = {
     "b",
     "n",
     "m",
-  ].map((char) => ({ used: false, char })),
-};
-
-type GameDataType = {
-  state: string;
-  word: string;
-  input: string[];
-  board: string[];
-  keys: {
-    used: boolean;
-    char: string;
-  }[];
+  ].map((char) => ({ match: "" as MatchType, char })),
 };
 
 export default function Home() {
@@ -63,8 +66,7 @@ export default function Home() {
           if (prev.word === prev.input.join("")) {
             newState = "win";
             setIsMsgShown(true);
-          }
-          if (prev.board.length >= 25) {
+          } else if (prev.board.length >= 25) {
             newState = "lose";
             setIsMsgShown(true);
           }
@@ -84,7 +86,13 @@ export default function Home() {
             state: newState,
             keys: prev.keys.map((key) =>
               prev.input.includes(key.char) && prev.input.length > 4
-                ? { char: key.char, used: true }
+                ? {
+                    char: key.char,
+                    match:
+                      key.match === "full"
+                        ? key.match
+                        : determineMatch(prev.word, prev.input, key.char),
+                  }
                 : key
             ),
           };
@@ -114,19 +122,23 @@ export default function Home() {
   }, [gameData, handleKeyDown]);
 
   return (
-    <main className="flex h-[calc(100dvh)] flex-col items-center gap-10 p-2 justify-between">
-      <h1 className="font-sans text-2xl font-bold antialiased">Wordle Clone</h1>
-      {isMsgShown && (
-        <div className="absolute bg-black text-white top-48 p-2 rounded transition">
-          {gameData.state === "win" &&
-            `You won! You guessed '${gameData.word}' in ${
-              gameData.board.length / 5
-            } ${gameData.board.length / 5 > 1 ? "tries!" : "try!"}`}
-          {gameData.state === "lose" &&
-            `Better Luck next time! The word was '${gameData.word}'`}
-          {gameData.state === "unf" && "Not enough letters!"}
-        </div>
-      )}
+    <main className="flex h-[calc(100dvh)] flex-col items-center p-2 justify-between">
+      <div className="h-16 flex flex-col items-center">
+        <h1 className="font-sans text-2xl font-bold antialiased">
+          Wordle Clone
+        </h1>
+        {isMsgShown && (
+          <div className="bg-black text-white p-2 rounded transition">
+            {gameData.state === "win" &&
+              `You won! You guessed '${gameData.word}' in ${
+                gameData.board.length / 5
+              } ${gameData.board.length / 5 > 1 ? "tries!" : "try!"}`}
+            {gameData.state === "lose" &&
+              `Better Luck next time! The word was '${gameData.word}'`}
+            {gameData.state === "unf" && "Not enough letters!"}
+          </div>
+        )}
+      </div>
       <Board gameData={gameData} />
       <Keyboard keys={gameData.keys} keyOnClick={handleKeyDown} />
     </main>
